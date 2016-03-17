@@ -7,7 +7,7 @@
 
 # Site settings
 title: Labyrinthine Wanderings
-email: programmer [at] wander [dot] ingstar [dot] com
+email: wanderings [at] wander [dot] ingstar [dot] com
 description: > # this means to ignore newlines until "baseurl:"
   Aneel's musings on code and tech
 baseurl: "" # the subpath of your site, e.g. /blog
