@@ -4,4 +4,4 @@ title: About
 permalink: /about/
 ---
 
-I'm putting very little effort into customizing this, it appears...
+I'm [Aneel Nazareth](http://wander.ingstar.com). I write code.
