@@ -2,7 +2,6 @@
 layout: post
 title:  "Oh, Hello There"
 date:   2016-03-15 23:46:29 -0500
-categories: administrivia
 ---
 
 It seems that GitHub will host a programming blog for me. Let's see

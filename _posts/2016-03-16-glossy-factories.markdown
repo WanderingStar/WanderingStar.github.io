@@ -2,11 +2,11 @@
 layout: post
 title:  "Glossy Factories"
 date:   2016-03-16 21:40:29 -0500
-categories: swift glossy json
 ---
 I've been playing around with [Gloss][gloss], a Swift JSON parser.
 I'm liking the mechanics of it a bit better than [SwiftyJSON][swifty]
 for a few reasons:
+
 - More concise code
 - Takes its arguments as `[String: AnyObject]`, which works nicely
   with the native types of NSJSONSerialization and [CouchBase Lite][cbl]
@@ -139,20 +139,6 @@ class ShapeHolder {
         self.shapes = "shapes" <~~ json ?? []
         self.byKey = "byKey" <~~ json ?? [:]
     }
-}
-
-
-let filePath = NSBundle.mainBundle().pathForResource("shapes", ofType:"json")
-let data = try! NSData(contentsOfFile:filePath!,
-    options: NSDataReadingOptions.DataReadingUncached)
-let json = try! NSJSONSerialization.JSONObjectWithData(data,
-    options: NSJSONReadingOptions()) as! JSON
-if let holder = ShapeHolder(json: json) {
-    print("array: \(holder.shapes)")
-    print("Dictionary: \(holder.byKey)")
-    
-    print("arrayArea: \(holder.shapes.reduce(0, combine: { $0 + $1.area })) = 9 + π")
-    print("arrayArea: \(holder.byKey.values.reduce(0, combine: { $0 + $1.area })) = 25 + 100π")
 }
 {% endhighlight %}
 

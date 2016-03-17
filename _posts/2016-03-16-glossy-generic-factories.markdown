@@ -2,7 +2,6 @@
 layout: post
 title:  "Glossy Generic Factories"
 date:   2016-03-16 23:46:29 -0500
-categories: swift glossy json
 ---
 [Last time][last] we looked at creating one-off factories that we can use to 
 parse collections of subclass objects with [Gloss][gloss].
