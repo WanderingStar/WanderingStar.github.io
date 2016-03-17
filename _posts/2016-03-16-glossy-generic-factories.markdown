@@ -70,7 +70,7 @@ class Shape: FactoryMakeable {
 }
 {% endhighlight %}
 
-There's still nothing special in our subclasses...
+There's still nothing special in our subtypes...
 
 {% highlight swift %}
 class Square: Shape {
@@ -106,7 +106,7 @@ class Circle: Shape {
 }
 {% endhighlight %}
 
-Our subtypes must be registered with the SuperType's Factory.
+Our subtypes must be registered with the supertype's Factory.
 
 {% highlight swift %}
 Shape.factory.subtypes["square"] = Square.self
