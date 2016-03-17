@@ -2,6 +2,7 @@
 layout: post
 title:  "Glossy Factories"
 date:   2016-03-16 21:40:29 -0500
+tags: swift gloss json
 ---
 I've been playing around with [Gloss][gloss], a Swift JSON parser.
 I'm liking the mechanics of it a bit better than [SwiftyJSON][swifty]
@@ -14,10 +15,14 @@ for a few reasons:
 One of my perennial problems with JSON parsing in Swift is mixed
 collections of objects. For example, maybe you have a collection of
 Shapes. Some of them are Circles, some are Squares. They may be in
-an arbitrary order.
+an arbitrary order. When you parse them out of the JSON, you want
+them to be the proper subtypes.
 
 I think Gloss lends itself to a pretty nice Factory pattern solution
 to this problem...
+
+Here we have our supertype. It has a factory method, and a mapping
+from subtype name to Type.
 
 {% highlight swift %}
 typealias JSON = [String: AnyObject]
@@ -39,7 +44,11 @@ class Shape {
     
     var area: Double { return 0 }
 }
+{% endhighlight %}
 
+There's nothing special about our subclasses.
+
+{% highlight swift %}
 class Square: Shape {
     let side: Double
     override var area: Double { return side * side }
@@ -55,7 +64,6 @@ class Square: Shape {
         }
     }
 }
-Shape.subtypes["square"] = Square.self
 
 class Circle: Shape {
     let radius: Double
@@ -72,20 +80,22 @@ class Circle: Shape {
         }
     }
 }
+{% endhighlight %}
+
+The subclasses must be registered with the factory. It would be
+nice to do this when the class is created, but Swift doesn't offer
+us something like `+initialize`. This can go somewhere like the
+AppDelegate's launch method.
+
+{% highlight swift %}
+Shape.subtypes["square"] = Square.self
 Shape.subtypes["circle"] = Circle.self
+{% endhighlight %}
 
-if let c = Shape.factory(["type": "circle", "radius": 3.0]) {
-    print(c.area)
-}
-if let s = Shape.factory(["type": "square", "side": 6.0]) {
-    print(s.area)
-}
-print(Shape.factory(["type": "unknown", "xyzzy": 11]) == nil)
-print(Shape.factory(["type": "circle"]) == nil)
+So far I haven't mentioned Gloss. With Gloss, we can add decoder
+methods and `<~~` convenience operators.
 
-
-/* using Gloss... */
-
+{% highlight swift %}
 extension Decoder {
     
     static func decodeShape(key: String, json: JSON) -> Shape? {
@@ -126,11 +136,11 @@ func <~~ (key: String, json: JSON) -> [Shape]? {
 func <~~ (key: String, json: JSON) -> [String: Shape]? {
     return Decoder.decodeShapeDictionary(key, json: json)
 }
+{% endhighlight %}
 
+This lets us parse those varied collections as cleanly as:
 
-/* and elsewhere ... */
-
-
+{% highlight swift %}
 class ShapeHolder {
     let shapes: [Shape]
     let byKey: [String: Shape]
@@ -142,9 +152,9 @@ class ShapeHolder {
 }
 {% endhighlight %}
 
-But we can do better...
+Pretty nice! But [we can do better...][next]
  
 [gloss]: https://github.com/hkellaway/Gloss
 [swifty]: https://github.com/SwiftyJSON/SwiftyJSON
 [cbl]: http://developer.couchbase.com/documentation/mobile/current/get-started/couchbase-lite-overview/index.html
-
+[next]: {{page.next.url}}

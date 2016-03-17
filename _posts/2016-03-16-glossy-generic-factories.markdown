@@ -2,6 +2,7 @@
 layout: post
 title:  "Glossy Generic Factories"
 date:   2016-03-16 23:46:29 -0500
+tags: swift gloss json generics
 ---
 [Last time][last] we looked at creating one-off factories that we can use to 
 parse collections of subclass objects with [Gloss][gloss].
@@ -9,9 +10,9 @@ parse collections of subclass objects with [Gloss][gloss].
 This time we're going to take a step back and use generics to abstract out
 the Factory...
 
-We'll start off with a protocol that looks a lot like
-Decodable. There's probably a way to use Decodable, but I couldn't get
-the operators working properly.
+We'll start off with a protocol that looks a lot like Gloss's
+`Decodable`. It would be nice to be able to use `Decodable` directly,
+but I couldn't get the operators working [properly](#why-not-decodable).
 
 {% highlight swift %}
 protocol Makeable {
@@ -25,15 +26,15 @@ create based on what it finds there.
 
 {% highlight swift %}
 class Factory<T: Makeable> {
-    let keyPath: String
+    let typeKeyPath: String
     var subtypes = [String: T.Type]()
     
     init(typeKeyPath: String) {
-        keyPath = typeKeyPath
+        self.typeKeyPath = typeKeyPath
     }
     
     func make(json: JSON) -> T? {
-        if let type = json.valueForKeyPath(keyPath) as? String,
+        if let type = json.valueForKeyPath(typeKeyPath) as? String,
             subtype = subtypes[type] {
                 return subtype.init(json: json)
         }
@@ -42,11 +43,11 @@ class Factory<T: Makeable> {
 }
 {% endhighlight %}
 
-Our subtypes should implement this protocol, specifying what
-factory to use to decode them.
+Our subtypes should implement this protocol, which lets us
+discover the factory that we should use to make them:
 
 {% highlight swift %}
-protocol FactoryDecodable: Makeable {
+protocol FactoryMakeable: Makeable {
     typealias Output: Makeable
     static var factory: Factory<Output> { get }
 }
@@ -55,7 +56,7 @@ protocol FactoryDecodable: Makeable {
 Our supertype defines the factory itself.
 
 {% highlight swift %}
-class Shape: FactoryDecodable {
+class Shape: FactoryMakeable {
     static var factory = Factory<Shape>(typeKeyPath: "type")
  
     var area: Double { return 0 }
@@ -67,7 +68,7 @@ class Shape: FactoryDecodable {
 }
 {% endhighlight %}
 
-There's nothing special in our subclasses...
+There's still nothing special in our subclasses...
 
 {% highlight swift %}
 class Square: Shape {
@@ -85,7 +86,6 @@ class Square: Shape {
         }
     }
 }
-
 
 class Circle: Shape {
     let radius: Double
@@ -111,25 +111,25 @@ Shape.factory.subtypes["square"] = Square.self
 Shape.factory.subtypes["circle"] = Circle.self
 {% endhighlight %}
 
-And now the Glossy part... Decoders that look for FactoryDecodables
-and collections of them.
+And now the Glossy part... Decoders that look for FactoryMakeables
+and collections of them:
 
 {% highlight swift %}
 extension Decoder {
     
-    static func decodeWithFactory<T: FactoryDecodable>(key: String, json: JSON) -> T? {
+    static func decodeWithFactory<T: FactoryMakeable>(key: String, json: JSON) -> T? {
         if let keyed = json.valueForKeyPath(key) as? JSON {
             return T.factory.make(keyed) as? T
         }
         return nil
     }
     
-    static func decodeArrayWithFactory<T: FactoryDecodable>(key: String, json: JSON) -> [T]? {
+    static func decodeArrayWithFactory<T: FactoryMakeable>(key: String, json: JSON) -> [T]? {
         guard let array = json.valueForKeyPath(key) as? [JSON] else { return nil }
         return array.flatMap { T.factory.make($0) as? T }
     }
     
-    static func decodeDictionaryWithFactory<T: FactoryDecodable>(key: String, json: JSON) -> [String: T]? {
+    static func decodeDictionaryWithFactory<T: FactoryMakeable>(key: String, json: JSON) -> [String: T]? {
         guard let dict = json.valueForKeyPath(key) as? [String: JSON] else { return nil }
         var made = [String: T]()
         for (key, value) in dict {
@@ -142,24 +142,24 @@ extension Decoder {
 }
 {% endhighlight %}
 
-And operators to make those nicer to use. 
+And operators to make those nicer to use... 
 
 {% highlight swift %}
-func <~~ <T: FactoryDecodable>(key: String, json: JSON) -> T? {
+func <~~ <T: FactoryMakeable>(key: String, json: JSON) -> T? {
     return Decoder.decodeWithFactory(key, json: json)
 }
 
-func <~~ <T: FactoryDecodable>(key: String, json: JSON) -> [T]? {
+func <~~ <T: FactoryMakeable>(key: String, json: JSON) -> [T]? {
     return Decoder.decodeArrayWithFactory(key, json: json)
 }
 
-func <~~ <T: FactoryDecodable>(key: String, json: JSON) -> [String: T]? {
+func <~~ <T: FactoryMakeable>(key: String, json: JSON) -> [String: T]? {
     return Decoder.decodeDictionaryWithFactory(key, json: json)
 }
 {% endhighlight %}
 
-Now we can have a Decodable class that contains arbitrary collections
-of Shapes.
+Now we can have a `Decodable` class that contains arbitrary collections
+of `Shape`s.
 
 {% highlight swift %}
 class ShapeHolder: Decodable {
@@ -173,6 +173,28 @@ class ShapeHolder: Decodable {
 }
 {% endhighlight %}
 
+### Why not Decodable?
+
+If `Shape` is `Decodable` and also `FactoryMakeable`, this is ambiguous:
+{% highlight swift %}
+let s: Shape = "shape" <~~ json
+{% endhighlight %}
+
+Should it use `Decoder.decodeDecodable`? or
+`Decoder.decodeWithFactory`?. The ambiguity could be resolved by
+declaring `protocol FactoryMakeable: Decodable`, but the `Output`
+type would still be `Decodable`, leading to the wrong decoding.
+
+If we could declare this, I think it would work:
+{% highlight swift %}
+protocol FactoryMakeable: Decodable {
+    typealias Output: FactoryMakeable
+    static var factory: Factory<Output> { get }
+}
+{% endhighlight %}
+But we can't use `FactoryMakeable` like that within its own definition.
+
 [last]: {{page.previous.url}} 
 [gloss]: https://github.com/hkellaway/Gloss
+
 
