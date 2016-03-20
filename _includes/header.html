@@ -2,7 +2,9 @@
 
   <div class="wrapper">
 
-    <a class="site-title" href="{{ site.baseurl }}/">{{ site.title }}</a>
+    <a class="site-title" href="{{ site.baseurl }}/">{{ site.title }}<br/>
+    {% assign random = page.title.size | modulo: site.data.subtitles.size %}
+    <span class="site-subtitle">{{ site.data.subtitles[random] }}</span></a> 
 
     <nav class="site-nav">
       <a href="#" class="menu-icon">

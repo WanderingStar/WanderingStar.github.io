@@ -3,7 +3,10 @@ layout: post
 title:  "Oh, Hello There"
 date:   2016-03-15 23:46:29 -0500
 tags: administrivia
+summary: Wherein a blog is started.
 ---
 
 It seems that GitHub will host a programming blog for me. Let's see
-how this goes.
+how this goes. It's going to be a bit of a challenge to focus on the
+content, rather than playing with this blogging software, so I'm going
+to try to keep this site plain for a bit.

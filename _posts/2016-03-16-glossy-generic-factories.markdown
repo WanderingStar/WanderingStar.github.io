@@ -3,6 +3,10 @@ layout: post
 title:  "Glossy Generic Factories"
 date:   2016-03-16 23:46:29 -0500
 tags: swift gloss json generics
+summary: >
+  Dealing with JSON collections of heterogeneous subtypes,
+  but more generally.
+
 ---
 [Last time][last] we looked at creating one-off factories that we can use to 
 parse collections of subclass objects with [Gloss][gloss]. But it's a drag

@@ -3,6 +3,7 @@ layout: post
 title:  "Glossy Factories"
 date:   2016-03-16 21:40:29 -0500
 tags: swift gloss json
+summary: Dealing with JSON collections of heterogeneous subtypes 
 ---
 I've been playing around with [Gloss][gloss], a Swift JSON parser.
 I'm liking the mechanics of it a bit better than [SwiftyJSON][swifty]
