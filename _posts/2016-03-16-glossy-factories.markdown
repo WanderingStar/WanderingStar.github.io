@@ -26,9 +26,7 @@ Here we have our supertype. It has a factory method, and a mapping
 from subtype name to Type.
 
 {% highlight swift %}
-typealias JSON = [String: AnyObject]
-
-class Shape {
+class Shape: Decodable {
     static var subtypes = [String: Shape.Type]()
     
     required init?(json: JSON) {
@@ -142,7 +140,7 @@ func <~~ (key: String, json: JSON) -> [String: Shape]? {
 This lets us parse those varied collections as cleanly as:
 
 {% highlight swift %}
-class ShapeHolder {
+class ShapeHolder: Decoder {
     let shapes: [Shape]
     let byKey: [String: Shape]
     
