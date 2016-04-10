@@ -20,7 +20,7 @@ encoding and decoding.
 The whole [thing][code] is under 100 lines of code so far, and a lot of that is
 exception handling, so I think the ideas are pretty straightforward. It could
 probably use a large helping of syntactic sugar and some thought put into
-patterns for searching, but it's a start...
+reference cycles and patterns for searching, but it's a start...
 
 I've cheekily nicknamed it [dali][dali], after Salvador Dalí, in honor of
 [The Persistence of Memory][art].
