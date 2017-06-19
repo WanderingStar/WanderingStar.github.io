@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "Swift 4 Codable Enum"
+title:  "Swift 4 Codable Enum with Associated Values"
 date:   2017-06-18 21:51:00
 tags: swift json codable unum
 summary: >
@@ -11,13 +11,17 @@ summary: >
 Well, it's been more than a year since I last posted here... I ran into the limitations
 of the reflection system and then got distracted by other things.
 
-Just a quick post to provide an example of a `Codable` `enum` in Swift 4, since I couldn't
-find one with a trivial search...
+Just a quick post to provide an example of a `Codable` `enum` with associated values
+in Swift 4, since I couldn't find one with a trivial search...
 
 This `enum` has two cases, each with associated values (of `Codable` types). We represent
 it in JSON as an `object` (which is like a Swift dictionary). Because there are dictionaries
 that are well-formed JSON, but don't represent correct Shapes, we have to check the
 assumptions as we Decode, and throw errors.
+
+Of course, this is a toy example. In a real-world situation, you'd want to chose a JSON
+representation that more closely matches your structure. Having a single key that corresponds
+to each `enum` case would probably make sense.
 
 You can download a [playground here](/uploads/CodableEnum.playground.zip).
 
