@@ -32,50 +32,58 @@ enum Shape: Codable {
     case rectangle(Double, Double)
     case circle(Double)
     
-    enum CodingKeys: String, CodingKey {
-        case length
-        case width
-        case radius
+    // the enum is not inherently Codable
+    init(from decoder: Decoder) throws {
+        let shapeDictionary = try ShapeDictionary(from: decoder)
+        self = try Shape.init(shapeDictionary: shapeDictionary)
+    }
+    
+    func encode(to encoder: Encoder) throws {
+        try ShapeDictionary(shape: self).encode(to: encoder)
+    }
+    
+    // This struct _is_ Codable, though ambiguous
+    struct ShapeDictionary: Codable {
+        let length: Double?
+        let width: Double?
+        let radius: Double?
+        
+        init(shape: Shape) {
+            switch shape {
+            case .rectangle(let l, let w):
+                self.length = l
+                self.width = w
+                self.radius = nil
+            case .circle(let r):
+                self.length = nil
+                self.width = nil
+                self.radius = r
+            }
+        }
     }
     
     // These are the ways the struct could be well-formed JSON, but incoherent
-    enum ShapeDecodingError: Error {
+    enum ShapeDictionaryDecodingError: Error {
         case missingLength
         case missingWidth
         case squaringTheCircle
         case shapeless
     }
     
-    init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        let length: Double? = try? container.decode(Double.self, forKey: .length)
-        let width: Double? = try? container.decode(Double.self, forKey: .width)
-        let radius: Double? = try? container.decode(Double.self, forKey: .radius)
-        
-        switch (length, width, radius) {
+    init(shapeDictionary: ShapeDictionary) throws {
+        switch (shapeDictionary.length, shapeDictionary.width, shapeDictionary.radius) {
         case (nil, nil, nil):
-            throw ShapeDecodingError.shapeless
+            throw ShapeDictionaryDecodingError.shapeless
         case (nil, _, nil):
-            throw ShapeDecodingError.missingLength
+            throw ShapeDictionaryDecodingError.missingLength
         case (_, nil, nil):
-            throw ShapeDecodingError.missingWidth
+            throw ShapeDictionaryDecodingError.missingWidth
         case (.some(let l), .some(let w), nil):
             self = .rectangle(l, w)
         case (nil, nil, .some(let r)):
             self = .circle(r)
         default:
-            throw ShapeDecodingError.squaringTheCircle
-        }
-    }
-    
-    func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: CodingKeys.self)
-        switch self {
-        case .rectangle(let length, let width):
-            try container.encode(length, forKey: .length)
-            try container.encode(width, forKey: .width)
-        case .circle(let radius):
-            try container.encode(radius, forKey: .radius)
+            throw ShapeDictionaryDecodingError.squaringTheCircle
         }
     }
 }
