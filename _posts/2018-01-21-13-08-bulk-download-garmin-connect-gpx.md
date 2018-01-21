@@ -1,10 +1,10 @@
 ---
 layout: post
-title:  "Bulk Download Garmin GPX"
+title:  "Bulk Download Garmin Connect activities as GPX"
 date:   2018-01-21 13:08:00
 tags: javascript GPS gpx Garmin
 summary: >
-  Bulk Download Garmin GPX
+  Bulk Download Garmin Connect activities as GPX
 
 ---
 
@@ -34,19 +34,19 @@ In case that goes away, here's the code:
 /*
 Here's javascript that can be run in any modern browser fairly simply in javascript. Might be easier to set up than Python.
 
-You'll want to pre-set a download location in your browser settings to some folder, name it TCX or something, and tell your browser to auto-download there, or else you'll get a ton of popup save dialogs.
+You'll want to pre-set a download location in your browser settings to some folder, name it gpx or something, and tell your browser to auto-download there, or else you'll get a ton of popup save dialogs.
 
 First Navigate to the last (most recent) activity you have in Garmin Connect (as in https://connect.garmin.com/modern/activity/5555555555 ), then hit F12 (should work in chrome/IE) to open dev tools to get to the Javascript Console. Then paste the below code and hit enter to run it. Can change ttl from 100 to whatever # of activities you want to download.
-If you want a different format, change the "tcx" part of the URL to the appropriate format acronym if garmin supports it.
+If you want a different format, change the "gpx" part of the URL to the appropriate format acronym if garmin supports it.
 If your connection is too slow to do a full download in less than 3 seconds every time, change the downloadTimeoutLength from 3 * 1000 to whatever number you want (it's 3*1000 because that's 3000 milliseconds = 3 seconds).
 
 [CODE]*/
 var a = window.location.pathname.split("/");
 var id = a[a.length-1];
-var tcxUrl = "https://connect.garmin.com/modern/proxy/download-service/export/tcx/activity/";
-var cnt = 1, ttl = 100; /*Change ttl from 100 to whatever # of activities you want to download*/
+var gpxUrl = "https://connect.garmin.com/modern/proxy/download-service/export/gpx/activity/";
+var cnt = 1, ttl = 1000; /*Change ttl from 1000 to whatever # of activities you want to download*/
 var downloadTimeoutLength = 3 * 1000;
-var downloadUrl = tcxUrl + id;
+var downloadUrl = gpxUrl + id;
 window.location.href = downloadUrl;
 
 setTimeout(
@@ -54,7 +54,7 @@ setTimeout(
 	jQuery.getJSON("https://connect.garmin.com/modern/proxy/activity-service/activity/"+id+"/relative?_="+Math.random()
 		,function(d){
 			id = d.previousActivityId;
-			downloadUrl = tcxUrl + id;
+			downloadUrl = gpxUrl + id;
 			window.location.href = downloadUrl;
 			if(++cnt<ttl){
 				setTimeout(getMore,downloadTimeoutLength );
