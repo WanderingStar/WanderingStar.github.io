@@ -82,17 +82,25 @@ tracks_from_waypoints = False  # if this is True, makes a single point Track ins
 seen_names = set()
 last_yrmo = None
 gpx = None
+revisits = 0
 
 with open("/tmp/4sq.json", "r") as f:
     for line in f.readlines():
         checkin = json.loads(line)
         try:
-            date = datetime.fromtimestamp(checkin['createdAt'])
             name = checkin['venue']['name']
+            # only keep the first visit to a named venue
+            # note that this might not be the right thing if there are multiple venues
+            # with the same name. we could dedupe based on venue id or similar, if that
+            # matters
             if name in seen_names:
+                revisits += 1
                 continue
+            seen_names.add(name)
+
             lat = checkin['venue']['location']['lat']
             lon = checkin['venue']['location']['lng']
+            date = datetime.fromtimestamp(checkin['createdAt'])
             yrmo = f"{date.year}-{date.month:02}"
             if last_yrmo != yrmo:
                 # if the month has changed, save the file we're working on and start a new one
@@ -126,6 +134,7 @@ print(f"{filename}: {len(gpx.waypoints) + len(gpx.tracks)}")
 with open(filename, "w") as f:
     f.write(gpx.to_xml() + "\n")
 
+print(f"Revists: {revisits}")
 {% endhighlight %}
 
 In the process of figuring out how to do this, I discovered [Fog of World](https://fogofworld.com),
