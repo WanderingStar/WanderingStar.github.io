@@ -19,6 +19,9 @@ Luckily, I'm also a habitual Foursquare/Swarm user, so I'd "checked in" at most 
 interesting places anyway. But how to get that data out of Foursquare and into my GPS
 tracks?
 
+The results: [Maldives](http://wander.ingstar.com/adventures/maldives-map.html)
+[Dubai](http://wander.ingstar.com/adventures/dubai-map.html)
+
 Happily, there are a couple of Python libraries that make it easy. I adapted the examples
 from the documentation for [foursquare](https://github.com/mLewisLogic/foursquare) and
 [gpxpy](https://github.com/tkrajina/gpxpy) to write the following scripts.
