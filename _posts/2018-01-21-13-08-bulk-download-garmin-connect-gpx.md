@@ -13,7 +13,7 @@ to hoard location data... [Fog of World](https://fogofworld.com).
 
 Of course, I started out by importing all of the GPX files from previous adventures
 that I had lying around (unfortunately, some of my adventures didn't have tracks,
-particularly the [Rally](http://wander.ingstar.com/adventures/rally.html), :sigh:),
+particularly the [Rally](http://wander.ingstar.com/adventures/rally.html), 😢),
 which got me thinking about what other data I have lying around.
 
 I've had a succession of bike GPSes, and have tracked their data on Garmin Connect.
@@ -25,7 +25,7 @@ As a mostly-backend coder, my first thought was to write a scraper to download t
 all, but that would mean the usual hassle with logins, but a search turned up an
 easier way: run javascript in the browser to do it for you...
 
-[Pastebin]()https://pastebin.com/YN6Gex5R)
+[Pastebin](https://pastebin.com/YN6Gex5R)
 
 In case that goes away, here's the code:
 
