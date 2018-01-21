@@ -52,8 +52,10 @@ access_token = client.oauth.get_token(token)
 # Apply the returned access token to the client
 client.set_access_token(access_token)
 
-
+# Retrieve all of your checkins
 checkins = client.users.all_checkins()
+
+# Write the checkins to a file, one JSON object per line
 with open("/tmp/4sq.json", "w") as f:
     i = 0
     for checkin in checkins:
@@ -62,6 +64,7 @@ with open("/tmp/4sq.json", "w") as f:
         if i % 100 == 0:
             print(i)
 
+print(i)
 {% endhighlight %}
 
 Now let's make a GPX file for each month with a waypoint for each venue 
