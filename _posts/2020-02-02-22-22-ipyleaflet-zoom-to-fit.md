@@ -53,3 +53,10 @@ m.target_bounds = ((33.66832279243364, 135.8861750364304), (33.670108611729475, 
 # use observe to make the handler get called when the bounds change
 m.observe(zoom_out_to_target_bounds, 'bounds')
 {% endhighlight %}
+
+Note that this probably does horrible things if the bounds cross the antimeridian
+(wrap around the world the wrong way). I'm not worrying about that because my
+points are guaranteed to fall between -180 and 180 degrees longitude.
+
+Here's a [notebook](https://github.com/WanderingStar/gpx-cleanup/blob/master/notebook/oneday.ipynb)
+using this technique.
